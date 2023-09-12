@@ -431,8 +431,8 @@ Transforms the SAMMI Bridge into a websocket to listen to!
 
 
     <!--main guts-->
-    <button onclick='connectWS()' class="btn btn-primary">Connect</button>
-    <p></p>
+        <input id="wsbox" type="text" placeholder="Type in me!!!! uwu">
+        <button onclick="sendMessage()" class="btn btn-primary">Send</button>
     <!--main guts end-->
 
     <div class="container">
@@ -654,10 +654,16 @@ function startBridgecast() {
 
   window.bridgecastWs.onmessage = (event) => {
     // SAMMI.triggerButton(eventData.buttonId);
+    console.log(event);
   };
 }
 function interval (ms) {
     new Promise(res => setTimeout(res, ms));
+}
+
+function sendMessage () {
+    const wsbox = document.querySelector('#wsbox');
+    window.bridgecastWs.send(JSON.stringify(wsbox))
 }
 }
 [insert_over]
