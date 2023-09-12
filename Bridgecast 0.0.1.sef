@@ -1,0 +1,663 @@
+[extension_name]
+Bridgecast
+
+[extension_info]
+Transforms the SAMMI Bridge into a websocket to listen to!
+
+[extension_version]
+0.0.1
+
+[insert_external]
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2" crossorigin="anonymous">
+        </script>
+        <!-- this is a hotfix 3 version -->
+    <style>
+        .bridgecast-collapse-button {
+            background: none;
+            color: inherit;
+            border: none;
+            padding: 0;
+            font: inherit;
+            cursor: pointer;
+            outline: inherit;
+        }
+
+        .bridgecast-collapse-button>svg {
+            pointer-events: none;
+            transform: scale(1.5);
+        }
+
+        .bridgecast-patron-ricecake {
+          transition: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+          transition-duration: 0.3s;
+          cursor: none;
+        }
+
+        .bridgecast-patron-ricecake:hover {
+          transform: scale(1.2);
+          rotate: 3deg;
+          background-color: #ffb991;
+          -webkit-box-shadow: 0px 0px 22px 7px rgba(255,228,74,1);
+          -moz-box-shadow: 0px 0px 22px 7px rgba(255,228,74,1);
+          box-shadow: 0px 0px 22px 7px rgba(255,228,74,1);
+        }
+
+        .bridgecast-patron-ricepile {
+          transition: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+          transition-duration: 0.3s;
+          cursor: none;
+        }
+
+        .bridgecast-patron-ricepile:hover {
+          transform: scale(1.2);
+        }
+
+        .bridgecast-collapse-button.active>svg {
+            transform: rotate(90deg);
+        }
+
+        .bridgecast-message {
+            margin-top: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .bridgecast-models-item-active {
+            border: 5px solid red;
+            pointer-events: none;
+            cursor: none;
+        }
+
+        .bridgecast-models-item {
+            color: white;
+            border-radius: 1rem;
+            background-color: #22559e;
+            min-width: 7rem;
+            max-width: 7rem;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transition: cubic-bezier(0.785, 0.135, 0.15, 0.86);
+            transition-duration: 50ms;
+            cursor: pointer;
+        }
+
+        .bridgecast-models-item:hover {
+            transform: scale(1.1);
+        }
+
+        .bridgecast-models-item-title {
+            pointer-events: none;
+            margin: 0.5rem;
+            font-weight: 300;
+        }
+
+        .bridgecast-models-item-image {
+            pointer-events: none;
+            width: 5rem;
+            height: 5rem;
+            object-fit: contain;
+        }
+
+        .bridgecast-emotions-item-active {
+            border: 5px solid red !important;
+            pointer-events: none;
+        }
+
+        .bridgecast-emotions-item {
+            color: white;
+            border-radius: 1rem;
+            background-color: #22559e;
+            z-index: 10;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            border: 2px solid rgb(24, 24, 24);
+            transition: cubic-bezier(0.785, 0.135, 0.15, 0.86);
+            transition-duration: 50ms;
+            cursor: pointer;
+        }
+
+        .bridgecast-poses-item {
+            border-radius: 0.5rem;
+            color: white;
+            background-color: #22559e;
+            z-index: 10;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            border: 2px solid rgb(24, 24, 24);
+            transition: cubic-bezier(0.785, 0.135, 0.15, 0.86);
+            transition-duration: 50ms;
+        }
+
+        .bridgecast-vanity-poses-item {
+            color: white;
+            z-index: 10;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transition: cubic-bezier(0.785, 0.135, 0.15, 0.86);
+            transition-duration: 50ms;
+        }
+
+        .bridgecast-backup-file {
+
+            background-color: rgb(75, 161, 112);
+            margin: 0;
+            width: 7rem;
+            height: 9rem;
+            padding: 0.4rem;
+            border-radius: 1rem;
+        }
+
+        .bridgecast-backup-files-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .bridgecast-poses-item:hover {
+            box-shadow: 5px 5px 10px rgb(0, 0, 0);
+            transform: scale(1.1);
+        }
+
+        .bridgecast-emotions-item:hover {
+            box-shadow: 5px 5px 10px rgb(0, 0, 0);
+            transform: scale(1.1);
+        }
+
+        .bridgecast-emotions-item-title {
+            font-weight: bolder !important;
+            pointer-events: none;
+            margin: 0.5rem;
+        }
+
+        .bridgecast-emotions-item-image {
+            pointer-events: none;
+            width: 10rem;
+            height: 10rem;
+            object-fit: contain;
+        }
+
+        .bridgecast-settings {
+            position: relative;
+        }
+
+        .bridgecast-settings-header {
+            margin-top: 1rem;
+        }
+
+        .bridgecast-settings-header h2 {
+            font-weight: bold;
+        }
+
+        .bridgecast-settings-body {
+            position: absolute;
+        }
+
+        .bridgecast-settings-body-overlay {
+            background-color: rgba(0, 0, 0, 0.847);
+            width: 100%;
+            height: 100%;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: row;
+        }
+
+        .bridgecast-settings-body-overlay h2 {
+            padding-left: 1rem;
+            color: white;
+        }
+
+        .lds-ellipsis {
+            display: inline-block;
+            position: relative;
+            width: 80px;
+            height: 80px;
+        }
+
+        .bridgecast-loading {
+            display: inline-block;
+            position: relative;
+            width: 80px;
+            height: 80px;
+        }
+
+        .bridgecast-loading div {
+            animation: bridgecast-loading 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+            transform-origin: 40px 40px;
+        }
+
+        .bridgecast-loading div:after {
+            content: " ";
+            display: block;
+            position: absolute;
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: #fff;
+            margin: -4px 0 0 -4px;
+        }
+
+        .bridgecast-loading div:nth-child(1) {
+            animation-delay: -0.036s;
+        }
+
+        .bridgecast-loading div:nth-child(1):after {
+            top: 63px;
+            left: 63px;
+        }
+
+        .bridgecast-loading div:nth-child(2) {
+            animation-delay: -0.072s;
+        }
+
+        .bridgecast-loading div:nth-child(2):after {
+            top: 68px;
+            left: 56px;
+        }
+
+        .bridgecast-loading div:nth-child(3) {
+            animation-delay: -0.108s;
+        }
+
+        .bridgecast-loading div:nth-child(3):after {
+            top: 71px;
+            left: 48px;
+        }
+
+        .bridgecast-loading div:nth-child(4) {
+            animation-delay: -0.144s;
+        }
+
+        .bridgecast-loading div:nth-child(4):after {
+            top: 72px;
+            left: 40px;
+        }
+
+        .bridgecast-loading div:nth-child(5) {
+            animation-delay: -0.18s;
+        }
+
+        .bridgecast-loading div:nth-child(5):after {
+            top: 71px;
+            left: 32px;
+        }
+
+        .bridgecast-loading div:nth-child(6) {
+            animation-delay: -0.216s;
+        }
+
+        .bridgecast-loading div:nth-child(6):after {
+            top: 68px;
+            left: 24px;
+        }
+
+        .bridgecast-loading div:nth-child(7) {
+            animation-delay: -0.252s;
+        }
+
+        .bridgecast-loading div:nth-child(7):after {
+            top: 63px;
+            left: 17px;
+        }
+
+        .bridgecast-loading div:nth-child(8) {
+            animation-delay: -0.288s;
+        }
+
+        .bridgecast-loading div:nth-child(8):after {
+            top: 56px;
+            left: 12px;
+        }
+
+        @keyframes bridgecast-loading {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+    <!-- Update Modal -->
+    <div class="modal fade" id='bridgecast-update-modal' tabindex="-1" aria-labelledby='bridgecast-update-modal-label'
+        aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id='bridgecast-update-modal-label'>New Update!</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <h4 id='bridgecast-update-modal-version'>Version {VersionNumber} - {UpdateCaption}</h4>
+                    <p class="mt-5 mb-5" id='bridgecast-update-modal-message'></p>
+                    <div class="mt-3 p-1 alert alert-danger d-flex align-items-center" role="alert">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="64" height="40" fill="currentColor"
+                            class="bi bi-exclamation-circle-fill" viewBox="0 0 16 16">
+                            <path
+                                d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8 4a.905.905 0 0 0-.9.995l.35 3.507a.552.552 0 0 0 1.1 0l.35-3.507A.905.905 0 0 0 8 4zm.002 6a1 1 0 1 0 0 2 1 1 0 0 0 0-2z" />
+                        </svg>
+                        <p class="mt-3" id='bridgecast-update-procedure'>a</p>
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <a id='bridgecast-updatelink' class="btn btn-primary" href="" target="_blank"
+                        rel="noopener noreferrer">Take me to the Download! <svg xmlns="http://www.w3.org/2000/svg"
+                            width="16" height="16" fill="currentColor" class="ms-1 mb-1 bi bi-box-arrow-up-right"
+                            viewBox="0 0 16 16">
+                            <path fill-rule="evenodd"
+                                d="M8.636 3.5a.5.5 0 0 0-.5-.5H1.5A1.5 1.5 0 0 0 0 4.5v10A1.5 1.5 0 0 0 1.5 16h10a1.5 1.5 0 0 0 1.5-1.5V7.864a.5.5 0 0 0-1 0V14.5a.5.5 0 0 1-.5.5h-10a.5.5 0 0 1-.5-.5v-10a.5.5 0 0 1 .5-.5h6.636a.5.5 0 0 0 .5-.5z" />
+                            <path fill-rule="evenodd"
+                                d="M16 .5a.5.5 0 0 0-.5-.5h-5a.5.5 0 0 0 0 1h3.793L6.146 9.146a.5.5 0 1 0 .708.708L15 1.707V5.5a.5.5 0 0 0 1 0v-5z" />
+                        </svg></a>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container align-items-left">
+        <img id='bridgecast-icon' style="padding-right: 0.5rem; width: 95px; height: auto;"
+            class="img-fluid mt-2 float-start" src="" alt="" />
+        <h2 id='bridgecast-title' style="margin: 0rem; padding: rem;">
+            </h1>
+            <h3 style="margin: 0rem; padding: 0rem;">By <a href="https://landie.land" target="_blank"
+                    rel="noopener noreferrer">Landie</a>
+                <span id='bridgecast-twitchLink' class="" style="">
+                    
+                        <svg
+                        xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white" class="bi bi-twitch"
+                        viewBox="0 0 16 16">
+                        <a id="twitchLink" href="https://twitch.tv/landie" target="_blank" rel="noopener noreferrer">
+                            <path
+                                d="M3.857 0 1 2.857v10.286h3.429V16l2.857-2.857H9.57L14.714 8V0H3.857zm9.714 7.429-2.285 2.285H9l-2 2v-2H4.429V1.143h9.142v6.286z" />
+                            <path d="M11.857 3.143h-1.143V6.57h1.143V3.143zm-3.143 0H7.571V6.57h1.143V3.143z" />
+                       </svg>
+                </span>
+                <a id='bridgecast-live-indicator' style="background-color: #64459c; text-decoration: none; color: white; font-size: 0.7rem; width: 4.9rem; display: none;"
+                        class="text-center p-1 border border-light rounded-pill" href="https://twitch.tv/landie" target="_blank" rel="noopener noreferrer">Live on Twitch!</a>
+                </a>
+                
+                <a id='bridgecast-twitterLink' href="" target="_blank" rel="noopener noreferrer"><svg
+                        xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white" class="bi bi-twitter"
+                        viewBox="0 0 16 16">
+                        <path
+                            d="M5.026 15c6.038 0 9.341-5.003 9.341-9.334 0-.14 0-.282-.006-.422A6.685 6.685 0 0 0 16 3.542a6.658 6.658 0 0 1-1.889.518 3.301 3.301 0 0 0 1.447-1.817 6.533 6.533 0 0 1-2.087.793A3.286 3.286 0 0 0 7.875 6.03a9.325 9.325 0 0 1-6.767-3.429 3.289 3.289 0 0 0 1.018 4.382A3.323 3.323 0 0 1 .64 6.575v.045a3.288 3.288 0 0 0 2.632 3.218 3.203 3.203 0 0 1-.865.115 3.23 3.23 0 0 1-.614-.057 3.283 3.283 0 0 0 3.067 2.277A6.588 6.588 0 0 1 .78 13.58a6.32 6.32 0 0 1-.78-.045A9.344 9.344 0 0 0 5.026 15z" />
+                    </svg></a>
+                <a id='bridgecast-discordLink' href="" target="_blank" rel="noopener noreferrer"><svg
+                        xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white" class="bi bi-discord"
+                        viewBox="0 0 16 16">
+                        <path
+                            d="M13.545 2.907a13.227 13.227 0 0 0-3.257-1.011.05.05 0 0 0-.052.025c-.141.25-.297.577-.406.833a12.19 12.19 0 0 0-3.658 0 8.258 8.258 0 0 0-.412-.833.051.051 0 0 0-.052-.025c-1.125.194-2.22.534-3.257 1.011a.041.041 0 0 0-.021.018C.356 6.024-.213 9.047.066 12.032c.001.014.01.028.021.037a13.276 13.276 0 0 0 3.995 2.02.05.05 0 0 0 .056-.019c.308-.42.582-.863.818-1.329a.05.05 0 0 0-.01-.059.051.051 0 0 0-.018-.011 8.875 8.875 0 0 1-1.248-.595.05.05 0 0 1-.02-.066.051.051 0 0 1 .015-.019c.084-.063.168-.129.248-.195a.05.05 0 0 1 .051-.007c2.619 1.196 5.454 1.196 8.041 0a.052.052 0 0 1 .053.007c.08.066.164.132.248.195a.051.051 0 0 1-.004.085 8.254 8.254 0 0 1-1.249.594.05.05 0 0 0-.03.03.052.052 0 0 0 .003.041c.24.465.515.909.817 1.329a.05.05 0 0 0 .056.019 13.235 13.235 0 0 0 4.001-2.02.049.049 0 0 0 .021-.037c.334-3.451-.559-6.449-2.366-9.106a.034.034 0 0 0-.02-.019Zm-8.198 7.307c-.789 0-1.438-.724-1.438-1.612 0-.889.637-1.613 1.438-1.613.807 0 1.45.73 1.438 1.613 0 .888-.637 1.612-1.438 1.612Zm5.316 0c-.788 0-1.438-.724-1.438-1.612 0-.889.637-1.613 1.438-1.613.807 0 1.451.73 1.438 1.613 0 .888-.631 1.612-1.438 1.612Z" />
+                    </svg></a>
+                <a id='bridgecast-youtubeLink' href="" target="_blank" rel="noopener noreferrer"><svg
+                        xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white" class="bi bi-youtube"
+                        viewBox="0 0 16 16">
+                        <path
+                            d="M8.051 1.999h.089c.822.003 4.987.033 6.11.335a2.01 2.01 0 0 1 1.415 1.42c.101.38.172.883.22 1.402l.01.104.022.26.008.104c.065.914.073 1.77.074 1.957v.075c-.001.194-.01 1.108-.082 2.06l-.008.105-.009.104c-.05.572-.124 1.14-.235 1.558a2.007 2.007 0 0 1-1.415 1.42c-1.16.312-5.569.334-6.18.335h-.142c-.309 0-1.587-.006-2.927-.052l-.17-.006-.087-.004-.171-.007-.171-.007c-1.11-.049-2.167-.128-2.654-.26a2.007 2.007 0 0 1-1.415-1.419c-.111-.417-.185-.986-.235-1.558L.09 9.82l-.008-.104A31.4 31.4 0 0 1 0 7.68v-.123c.002-.215.01-.958.064-1.778l.007-.103.003-.052.008-.104.022-.26.01-.104c.048-.519.119-1.023.22-1.402a2.007 2.007 0 0 1 1.415-1.42c.487-.13 1.544-.21 2.654-.26l.17-.007.172-.006.086-.003.171-.007A99.788 99.788 0 0 1 7.858 2h.193zM6.4 5.209v4.818l4.157-2.408L6.4 5.209z" />
+                    </svg></a>
+                    <a id='bridgecast-patreonLink' href="" target="_blank" rel="noopener noreferrer"><svg style="color: white" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 512 512">
+                    <path d="M512 194.8c0 101.3-82.4 183.8-183.8 183.8-101.7 0-184.4-82.4-184.4-183.8 0-101.6 82.7-184.3 184.4-184.3C429.6 10.5 512 93.2 512 194.8zM0 501.5h90v-491H0v491z" fill="white"></path></svg></a>
+                    
+                </span>
+            </h3>
+            <h5 id='bridgecast-version'>Version {VersionNumber}</h5>
+    </div>
+    <!--Update alert-->
+    <div id='bridgecast-update-modal-alert' class="container" style="display: none">
+        <div class="mt-3 p-1 alert alert-warning d-flex align-items-center" role="alert">
+            <svg xmlns="http://www.w3.org/2000/svg" width="64" height="40" fill="currentColor"
+                class="me-2 bi bi-exclamation-triangle-fill" viewBox="0 0 16 16">
+                <path
+                    d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z" />
+            </svg>
+            <p class="mt-3">A new update is available! <a name="check-for-updates" id='bridgecast-update-more-info'
+                    class="btn btn-info ms-3" href="#" role="button">More info</a></p>
+        </div>
+    </div>
+    <div style="margin-top: 1rem;" class="container">
+        <h3 id='bridgecast-description'></h3>
+    </div>
+
+
+    <!--main guts-->
+    <button onclick='connectWS()' class="btn btn-primary">Connect</button>
+    <p></p>
+    <!--main guts end-->
+
+    <div class="container">
+        <div class="mt-5 p-1 alert alert-info d-flex align-items-center" role="alert">
+            <svg class="me-2" xmlns="http://www.w3.org/2000/svg" width="64" height="40" fill="currentColor"
+                class="bi bi-question-circle-fill" viewBox="0 0 16 16">
+                <path
+                    d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM5.496 6.033h.825c.138 0 .248-.113.266-.25.09-.656.54-1.134 1.342-1.134.686 0 1.314.343 1.314 1.168 0 .635-.374.927-.965 1.371-.673.489-1.206 1.06-1.168 1.987l.003.217a.25.25 0 0 0 .25.246h.811a.25.25 0 0 0 .25-.25v-.105c0-.718.273-.927 1.01-1.486.609-.463 1.244-.977 1.244-2.056 0-1.511-1.276-2.241-2.673-2.241-1.267 0-2.655.59-2.75 2.286a.237.237 0 0 0 .241.247zm2.325 6.443c.61 0 1.029-.394 1.029-.927 0-.552-.42-.94-1.029-.94-.584 0-1.009.388-1.009.94 0 .533.425.927 1.01.927z" />
+            </svg>
+            <p class="mt-3">Please visit the <a id='bridgecast-documentation' class="alert-link" href="" target="_blank"
+                    rel="noopener noreferrer">Documentation</a> To learn how to use this extension! If
+                you still have questions, please join my discord server with the icon link above!</p>
+        </div>
+    </div>
+
+
+    <!--support footer-->
+    <div class="container mt-3">
+        <div class="mb-5 row d-flex justify-content-center">
+            <div class="col-6 col-xs-3">
+                <h5>Please consider supporting my <a href="https://patreon.com/landie" target="_blank" rel="noopener noreferrer">Patreon</a>! You can get early access builds of my projects, your name plastered here (yes, here!), exclusive patreon chats in my discord where I share all of my upcoming plans for my projects alongside progress, and more!!<br><br>I have no job, this is my full-time passion project!</h5>
+            </div>
+            <div class="col-3 col-xs-9 d-flex justify-content-center align-items-center">
+                <img style= "width: 10rem;" class=""
+                    src="https://raw.githubusercontent.com/Landiie/landiie.github.io/main/shop/landie%20patreon.png"
+                    alt="">
+            </div>
+        </div>
+        <div class="row d-flex justify-content-center align-items-center">All these lovely peeps keep my projects alive!!</div>
+        <div class="row d-flex justify-content-center">
+        <div class="container" style="width: 75%">
+        <div style="color: darkorange;" class="col-12 d-flex flex-column">
+        <h3>Rice Cakes</h3>
+        <div class="bridgecast-patrons-ricecake d-flex flex-row flex-wrap" style="gap: 0.5rem;">
+          <h4>Test</h4>
+          <h4>Test</h4>
+          <h4>Test</h4>
+          <h4>Test</h4>
+          <h4>Test</h4>
+          <h4>Test</h4>
+        </div>
+        </div>
+    </div>
+        </div>
+        <div class="row">
+          <div class="container" style="width: 75%">
+          <div style="color: lightgray;" class="col-12 d-flex flex-column">
+          <h4>Rice Piles</h4>
+          <div class="bridgecast-patrons-ricepile d-flex flex-row flex-wrap" style="gap: 0.5rem;">
+            <h5>Test</h5>
+            <h5>Test</h5>
+            <h5>Test</h5>
+            <h5>Test</h5>
+            <h5>Test</h5>
+            <h5>Test</h5>
+            <h5>Test</h5>
+            <h5>Test</h5>
+            <h5>Test</h5>
+          </div>
+          </div>
+      </div>
+        </div>
+        <div class="row d-flex justify-content-center align-items-center">
+            <div class="col-6 col-xs-3">
+                <h5>Intrested in my other extensions? check them all out <a id='bridgecast-shoplink' href=""
+                        target="_blank" rel="noopener noreferrer">Here!</a></h5>
+            </div>
+            <div class="col-3 col-xs-9 d-flex justify-content-center align-items-center">
+                <img style="padding-right: 0.5rem; height: auto;" class="float-start"
+                    src="https://raw.githubusercontent.com/Landiie/LB2-foobar2000-Control/main/transmitter_landielogo.png"
+                    alt="" />
+            </div>
+        </div>
+    </div>
+    <script>
+
+        //quick info
+
+        BridgecastFillInfo()
+
+        function BridgecastFillInfo() {
+
+
+            const TwitterLink = 'https://twitter.com/landie__'
+            const DiscordLink = 'https://discord.gg/ZTbMw7TVKa'
+            const YoutubeLink = 'https://youtube.com/landie'
+            const PatreonLink = 'http://patreon.landie.land'
+            const productImage = "https://raw.githubusercontent.com/Landiie/landiie.github.io/main/shop/landitube%20bridge.png";
+            const updateProcedure = 'Read the <a class="alert-link" href="https://landie.land/shop/sammi-extensions/landitube#setup" target="_blank" rel="noopener noreferrer">update procedure</a> before updating!'
+            const versionNumber = "0.0.1";
+            const productName = "LandiTube";
+            const productDescription = 'Advanced 2D VTuber framework powered by SAMMI! <span style="font-size: 15px; color: gray;" >(Commissioned by <a style="color: gray;" href="https://twitch.tv/jessyabeb">Jessyabeb</a>!)</span>'
+            const shopLink = 'https://landie.land/shop'
+            const onlineUpdaterLink = 'https://raw.githubusercontent.com/Landiie/landiie.github.io/main/shop/sammi-extensions/landitube_info.json'
+            const patronsLink = 'https://raw.githubusercontent.com/Landiie/landiie.github.io/main/patrons.json';
+            const updateLink = 'https://landie.land/shop/sammi-extensions/landitube#patchnotes'
+            const documentationLink = 'https://landie.land/shop/sammi-extensions/landitube#documentation';
+
+            document.getElementById('bridgecast-twitterLink').href = TwitterLink
+            document.getElementById('bridgecast-discordLink').href = DiscordLink
+            document.getElementById('bridgecast-youtubeLink').href = YoutubeLink
+            document.getElementById('bridgecast-patreonLink').href = PatreonLink
+
+            document.getElementById('bridgecast-title').textContent = productName
+            document.getElementById('bridgecast-description').innerHTML = productDescription
+            document.getElementById('bridgecast-version').textContent = `ver. ${versionNumber}`
+            document.getElementById('bridgecast-icon').src = productImage
+            document.getElementById('bridgecast-shoplink').href = shopLink
+            document.getElementById('bridgecast-updatelink').href = updateLink
+            document.getElementById('bridgecast-update-procedure').innerHTML = updateProcedure
+            document.getElementById('bridgecast-documentation').href = documentationLink
+
+            //update check
+            BridgecastUpdateCheck();
+            async function BridgecastUpdateCheck() {
+                const resp = await fetch(onlineUpdaterLink);
+                const data = await resp.json();
+                const liveVersion = data.version
+                const updateCaption = data.versionSummaryHeader
+                const updateShortMessage = data.versionSummaryBody
+
+                if (versionNumber !== liveVersion) {
+
+                    //shows the update warning alert
+                    document.getElementById('bridgecast-update-modal-alert').style.display = "block"
+
+                    //replace modal header title and caption
+                    document.getElementById('bridgecast-update-modal-version').textContent = document.getElementById('bridgecast-update-modal-version').textContent.replace("{VersionNumber}", liveVersion)
+                    document.getElementById('bridgecast-update-modal-version').textContent = document.getElementById('bridgecast-update-modal-version').textContent.replace("{UpdateCaption}", updateCaption)
+                    document.getElementById('bridgecast-update-modal-message').innerHTML = updateShortMessage
+                } else {
+                }
+            }
+            //fetch patrons
+            BridgecastFetchPatrons();
+            async function BridgecastFetchPatrons() {
+              const resp = await fetch(patronsLink);
+              const data = await resp.json();
+              const riceCakes = data.riceCakes;
+              const ricePiles = data.ricePiles;
+
+              let riceCakesList = '';
+              let ricePilesList = '';
+
+              riceCakes.forEach(patron => {
+                riceCakesList += `<h4 class="bridgecast-patron-ricecake">${patron},</h4>`
+              });
+
+              ricePiles.forEach(patron => {
+                ricePilesList += `<h5 class="bridgecast-patron-ricepile">${patron},</h5>`
+              });
+
+              document.querySelector('.bridgecast-patrons-ricecake').innerHTML = riceCakesList;
+              document.querySelector('.bridgecast-patrons-ricepile').innerHTML = ricePilesList;
+
+              document.querySelector('.bridgecast-patrons-ricecake').addEventListener("mouseover", (e) => {
+                if (e.target.localName === "div") return;
+                e.target.style.rotate = `${((Math.random() < 0.5 ? -1 : 1) * Math.floor(Math.random() * 10))}deg`
+              });
+              document.querySelector('.bridgecast-patrons-ricecake').addEventListener("mouseout", (e) => {
+                if (e.target.localName === "div") return;
+                e.target.style.rotate = `0deg`
+              });
+            }
+            }
+
+
+        //if live or not
+        fetch("https://decapi.me/twitch/uptime/landie/?offline_msg=notstreaming").then(resp => resp.text()).then(status => {
+            if (status != "notstreaming") {
+                document.getElementById('bridgecast-live-indicator').style.display = ''
+                document.getElementById('bridgecast-twitchLink').style.display = 'none';
+            }
+        })
+
+        // update modal
+        document.querySelector('#bridgecast-update-more-info').addEventListener("click", function () {
+            const updateModal = document.getElementById('bridgecast-update-modal')
+            const updateModalObject = new bootstrap.Modal(updateModal)
+            updateModalObject.show()
+        })
+
+    </script>
+
+[insert_command]
+
+
+[insert_hook]
+
+[insert_script]
+{
+window.addEventListener('load', () => {
+  startBridgecast(); //begin loop
+});
+
+function startBridgecast() {
+  const wsUrl = 'ws://127.0.0.1:6969/sammi-bridge-boi';
+  window.bridgecastWs = new WebSocket(wsUrl); //use window to work around firefox ocnnection issue
+
+  window.bridgecastWs.onopen = () => {
+    console.log("[Bridgecast] Connected to server!");
+    SAMMI.alert('[Bridgecast] Connected to server!');
+  };
+
+  window.bridgecastWs.onclose = async () => {
+    const interval = 3000;
+    console.log("[Bridgecast] Disconnected...");
+    console.log(`[Bridgecast] Retrying conection in ${interval / 1000}`);
+    SAMMI.alert('[Bridgecast] Disconnected...');
+    SAMMI.alert(`[Bridgecast] Retrying conection in ${interval / 1000}`);
+    await delay(interval);
+    startBridgecast();
+  }
+
+  window.bridgecastWs.onerror = (error) => {
+    console.log('[Bridgecast] ERROR:')
+    console.error(error)
+  };
+
+  window.bridgecastWs.onmessage = (event) => {
+    // SAMMI.triggerButton(eventData.buttonId);
+  };
+}
+function interval (ms) {
+    new Promise(res => setTimeout(res, ms));
+}
+}
+[insert_over]
