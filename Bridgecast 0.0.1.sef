@@ -431,8 +431,8 @@ Transforms the SAMMI Bridge into a websocket to listen to!
 
 
     <!--main guts-->
-        <input id="wsbox" type="text" placeholder="Type in me!!!! uwu">
-        <button onclick="sendMessage()" class="btn btn-primary">Send</button>
+    <button onclick='connectWS()' class="btn btn-primary">Connect</button>
+    <p></p>
     <!--main guts end-->
 
     <div class="container">
@@ -618,12 +618,16 @@ Transforms the SAMMI Bridge into a websocket to listen to!
     </script>
 
 [insert_command]
-
-
+SAMMI.extCommand('Bridgecast: Websocket Send', 4467268, 80, {
+    json: ['Data (JSON)', 0, '', null, null]
+  });
 [insert_hook]
-
+case "Bridgecast: Websocket Send": {
+    bridgecastSendFromSAMMI(SAMMIJSON.json, SAMMIJSON.FromButton);
+} break
 [insert_script]
-{
+
+const bridgecastDelay = ms => new Promise(res => setTimeout(res, ms));
 window.addEventListener('load', () => {
   startBridgecast(); //begin loop
 });
@@ -643,7 +647,7 @@ function startBridgecast() {
     console.log(`[Bridgecast] Retrying conection in ${interval / 1000}`);
     SAMMI.alert('[Bridgecast] Disconnected...');
     SAMMI.alert(`[Bridgecast] Retrying conection in ${interval / 1000}`);
-    await delay(interval);
+    await bridgecastDelay(interval);
     startBridgecast();
   }
 
@@ -654,16 +658,11 @@ function startBridgecast() {
 
   window.bridgecastWs.onmessage = (event) => {
     // SAMMI.triggerButton(eventData.buttonId);
-    console.log(event);
   };
+
 }
-function interval (ms) {
-    new Promise(res => setTimeout(res, ms));
+function bridgecastSendFromSAMMI(json, button) {
+  window.bridgecastWs.send(json);
 }
 
-function sendMessage () {
-    const wsbox = document.querySelector('#wsbox');
-    window.bridgecastWs.send(JSON.stringify(wsbox))
-}
-}
 [insert_over]
