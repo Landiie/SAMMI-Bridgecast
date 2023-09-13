@@ -156,6 +156,7 @@
 
     .message-header h1 {
       font-size: 2rem;
+      color: white;
     }
 
     .message-header p {
@@ -213,6 +214,8 @@
           const data = JSON.parse(event.data)
           console.log(data)
 
+          const textColor = getTextColor(`#${data.chatData.name_color}`)
+
           const messageList = document.querySelector(".message-container-list")
 
           messageList.insertAdjacentHTML(
@@ -228,17 +231,17 @@
 
         <div class="message-container-inner">
           <div class="message-header">
-            <h1 style="font-weight: 800">${data.name}</h1>
-            <p class="message-pronouns">they/them</p>
-            <div class="message-badgelist">
+            <h1 style="font-weight: 800">${data.chatData.display_name}</h1>
+            <p style="display: none;" class="message-pronouns">they/them</p>
+            <div class="message-badgelist" style="display: none;">
               <img
                 src="https://static-cdn.jtvnw.net/badges/v1/3267646d-33f0-4b17-b3df-f923a41db1d0/3"
                 alt=""
               />
             </div>
           </div>
-          <div class="message-body">
-            <p>${data.message}</p>
+          <div class="message-body" style="background-color: #${data.chatData.name_color} !important;">
+            <p style="color: ${textColor}" >${data.chatData.message}</p>
           </div>
         </div>
       </div>
@@ -292,6 +295,7 @@
           lastMessage.scrollIntoView({ behavior: "smooth" })
         }
       }
+      //refresh
     </script>
   </body>
 </html>
