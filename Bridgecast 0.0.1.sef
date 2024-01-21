@@ -619,11 +619,12 @@ Transforms the SAMMI Bridge into a websocket to listen to!
 
 [insert_command]
 SAMMI.extCommand('Bridgecast: Websocket Send', 4467268, 80, {
+    client_id: ['Client ID', 14, '', null, null]
     json: ['Data (JSON)', 0, '', null, null]
   });
 [insert_hook]
 case "Bridgecast: Websocket Send": {
-    bridgecastSendFromSAMMI(SAMMIJSON.json, SAMMIJSON.FromButton);
+    bridgecastSendFromSAMMI(SAMMIJSON.client_id, SAMMIJSON.json, SAMMIJSON.FromButton);
 } break
 [insert_script]
 
@@ -661,8 +662,16 @@ function startBridgecast() {
   };
 
 }
-function bridgecastSendFromSAMMI(json, button) {
-  window.bridgecastWs.send(json);
+function bridgecastSendFromSAMMI(clientId, json, button) {
+    if (clientId === '') {
+        SAMMI.alert('[Bridgecast] You need to provide a Client ID!')
+        return;
+    }
+    const obj = {
+        client_id: clientId,
+        data: JSON.parse(json)
+    }
+  window.bridgecastWs.send(JSON.stringify(obj));
 }
 
 [insert_over]

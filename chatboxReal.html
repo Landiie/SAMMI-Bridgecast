@@ -245,7 +245,7 @@
             startBridgecast() //begin loop
         })
         function startBridgecast() {
-            const wsUrl = "ws://127.0.0.1:6969/sammi-bridge-boi"
+            const wsUrl = "ws://127.0.0.1:6969/sammi-chatbox"
             window.bridgecastWs = new WebSocket(wsUrl) //use window to work around firefox ocnnection issue
 
             window.bridgecastWs.onopen = () => {
@@ -266,9 +266,9 @@
             }
 
             window.bridgecastWs.onmessage = (event) => {
-                console.log(event)
                 const data = JSON.parse(event.data)
-
+                console.log(data)
+                newMessage(data.display_name, data.message, data.extended.profile_image_url)
             }
             function interval(ms) {
                 new Promise((res) => setTimeout(res, ms))
@@ -280,14 +280,14 @@
             // document.querySelector('.msg-user-text').textContent = lorem;
         });
 
-        function newMessage() {
+        function newMessage(name, message, pfp) {
             const chatbox = document.querySelector('.chatbox');
 
             // Your template string for the message
             const msgTemplate = `
             <div class="msg">
             <div class="msg-pfp">
-                <img class="msg-pfp-source" src="https://static-cdn.jtvnw.net/jtv_user_pictures/253b301b-9f40-4489-a8c3-7227f3d5b128-profile_image-70x70.png"
+                <img class="msg-pfp-source" width="70" height="70" src="https://static-cdn.jtvnw.net/jtv_user_pictures/253b301b-9f40-4489-a8c3-7227f3d5b128-profile_image-70x70.png"
                     alt="">
             </div>
             <div class="msg-contents">
@@ -312,12 +312,18 @@
             // Modify the content of the message if needed
             // if same user as before, combine message
             let msgContainer;
-            if (!isPreviousUser('Landie')) {
+            if (!isPreviousUser(name)) {
                 //new user, new message
                 msgContainer = htmlToNode(msgTemplate);
 
                 //text
-                msgContainer.querySelector('.msg-user-text').textContent = `awa ${Math.round(Math.random() * 100)}`;
+                msgContainer.querySelector('.msg-user-text').textContent = message;
+                
+                //pfp
+                msgContainer.querySelector('.msg-pfp-source').src = pfp;
+                
+                //name
+                msgContainer.querySelector('.msg-user-name').textContent = name;
 
                 // Append the message container to the chatbox
                 chatbox.appendChild(msgContainer);
@@ -327,9 +333,9 @@
                 //same user, append to previous message with some margin
                 msgContainer = document.querySelector('.chatbox').lastElementChild.children[1]
                 const msgContainerExtension = htmlToNode(`<p class="msg-user-text" style="margin-top: 1rem"></p>`)
-
+                //* wa
                 //text
-                msgContainerExtension.textContent = 'omg'
+                msgContainerExtension.textContent = message
 
                 msgContainer.appendChild(msgContainerExtension)
             }
@@ -372,7 +378,7 @@
                     ? getRGB(c) / 255 / 12.92
                     : Math.pow((getRGB(c) / 255 + 0.055) / 1.055, 2.4)
             }
-
+            //? wow!
             function getLuminance(hexColor) {
                 return (
                     0.2126 * getsRGB(hexColor.substr(1, 2)) +
