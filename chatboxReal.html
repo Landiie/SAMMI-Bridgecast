@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chatbox Real</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,900;1,900&family=Roboto&display=swap"
+        rel="stylesheet">
+</head>
+
+
+<body>
+    <style>
+        /* http://meyerweb.com/eric/tools/css/reset/ 
+   v2.0 | 20110126
+   License: none (public domain)
+*/
+
+        html,
+        body,
+        div,
+        span,
+        applet,
+        object,
+        iframe,
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6,
+        p,
+        blockquote,
+        pre,
+        a,
+        abbr,
+        acronym,
+        address,
+        big,
+        cite,
+        code,
+        del,
+        dfn,
+        em,
+        img,
+        ins,
+        kbd,
+        q,
+        s,
+        samp,
+        small,
+        strike,
+        strong,
+        sub,
+        sup,
+        tt,
+        var,
+        b,
+        u,
+        i,
+        center,
+        dl,
+        dt,
+        dd,
+        ol,
+        ul,
+        li,
+        fieldset,
+        form,
+        label,
+        legend,
+        table,
+        caption,
+        tbody,
+        tfoot,
+        thead,
+        tr,
+        th,
+        td,
+        article,
+        aside,
+        canvas,
+        details,
+        embed,
+        figure,
+        figcaption,
+        footer,
+        header,
+        hgroup,
+        menu,
+        nav,
+        output,
+        ruby,
+        section,
+        summary,
+        time,
+        mark,
+        audio,
+        video {
+            margin: 0;
+            padding: 0;
+            border: 0;
+            font-size: 100%;
+            font: inherit;
+            vertical-align: baseline;
+        }
+
+        /* HTML5 display-role reset for older browsers */
+        article,
+        aside,
+        details,
+        figcaption,
+        figure,
+        footer,
+        header,
+        hgroup,
+        menu,
+        nav,
+        section {
+            display: block;
+        }
+
+        body {
+            line-height: 1;
+        }
+
+        ol,
+        ul {
+            list-style: none;
+        }
+
+        blockquote,
+        q {
+            quotes: none;
+        }
+
+        blockquote:before,
+        blockquote:after,
+        q:before,
+        q:after {
+            content: '';
+            content: none;
+        }
+
+        table {
+            border-collapse: collapse;
+            border-spacing: 0;
+        }
+
+        /* css end reset */
+
+        body {
+            padding: 2rem;
+            font-family: "Roboto", sans-serif;
+            font-weight: 400;
+            font-style: normal;
+        }
+
+        .chatbox {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .msg {
+            display: flex;
+        }
+
+        .msg-contents {
+            display: flex;
+            flex-direction: column;
+            margin-left: 1rem;
+        }
+
+        .msg-header {
+            margin-left: 1rem;
+            display: flex;
+            margin-bottom: 0.3rem;
+            align-items: center;
+        }
+
+        .msg-user-flair {
+            display: flex;
+            gap: 0.2rem;
+            margin-left: 1rem;
+        }
+
+        .msg-user-text {
+            background-color: lightblue;
+            border-radius: 1rem;
+            padding: 1rem;
+            box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.342);
+        }
+
+        .msg-user-name {
+            font-family: 'Nunito', sans-serif;
+            font-size: 1.4rem;
+        }
+
+        .msg-user-pronouns {
+            text-align: center;
+            margin-left: 0.2rem;
+            transform: translateY(2px);
+        }
+
+        .msg-pfp-source {
+            border-radius: 0.5rem;
+        }
+
+        button {
+            position: fixed;
+        }
+    </style>
+    <button onclick="newMessage()">msg</button>
+    <div class="chatbox">
+        <!-- <div class="msg">
+            <div class="msg-pfp">
+                <img class="msg-pfp-source"
+                    src="https://static-cdn.jtvnw.net/jtv_user_pictures/253b301b-9f40-4489-a8c3-7227f3d5b128-profile_image-70x70.png"
+                    alt="">
+            </div>
+            <div class="msg-contents">
+                <div class="msg-header">
+                    <h1 class="msg-user-name">Landie</h1>
+                    <h2 class="msg-user-pronouns">they/them</h2>
+                    <div class="msg-user-flair">
+                        <img src="https://placehold.co/20x20/png" alt="">
+                        <img src="https://placehold.co/20x20/png" alt="">
+                        <img src="https://placehold.co/20x20/png" alt="">
+                        <img src="https://placehold.co/20x20/png" alt="">
+                    </div>
+                </div>
+                <p class="msg-user-text">
+                    loading
+                </p>
+            </div>
+        </div> -->
+    </div>
+    <script>
+        const delay = (ms) => new Promise((res) => setTimeout(res, ms))
+        window.addEventListener("load", () => {
+            startBridgecast() //begin loop
+        })
+        function startBridgecast() {
+            const wsUrl = "ws://127.0.0.1:6969/sammi-bridge-boi"
+            window.bridgecastWs = new WebSocket(wsUrl) //use window to work around firefox ocnnection issue
+
+            window.bridgecastWs.onopen = () => {
+                console.log("[Bridgecast] Connected to server!")
+            }
+
+            window.bridgecastWs.onclose = async () => {
+                const interval = 3000
+                console.log("[Bridgecast] Disconnected...")
+                console.log(`[Bridgecast] Retrying conection in ${interval / 1000}`)
+                await delay(interval)
+                startBridgecast()
+            }
+
+            window.bridgecastWs.onerror = (error) => {
+                console.log("[Bridgecast] ERROR:")
+                console.error(error)
+            }
+
+            window.bridgecastWs.onmessage = (event) => {
+                console.log(event)
+                const data = JSON.parse(event.data)
+
+            }
+            function interval(ms) {
+                new Promise((res) => setTimeout(res, ms))
+            }
+        }
+        const lorem = 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Ratione, eius esse similique vero cumque quae consequatur asperiores doloribus nostrum rem earum obcaecati consectetur quis eum! Libero dignissimos at amet hic laboriosam nesciunt veritatis ratione veniam omnis laudantium iusto dicta vel inventore dolorum excepturi praesentium aliquid vero eligendi nisi doloremque, iure debitis nam. Distinctio reiciendis et architecto, ipsam laudantium corrupti commodi odio maxime nisi possimus quos ea nulla repellat assumenda laborum mollitia sequi, reprehenderit sit veniam deserunt? Sint neque laborum nostrum voluptas fugit, facere non veniam deserunt, iusto adipisci mollitia veritatis laboriosam, iure impedit vitae pariatur nulla. Culpa neque accusamus ea.'
+
+        addEventListener("load", (event) => {
+            // document.querySelector('.msg-user-text').textContent = lorem;
+        });
+
+        function newMessage() {
+            const chatbox = document.querySelector('.chatbox');
+
+            // Your template string for the message
+            const msgTemplate = `
+            <div class="msg">
+            <div class="msg-pfp">
+                <img class="msg-pfp-source" src="https://static-cdn.jtvnw.net/jtv_user_pictures/253b301b-9f40-4489-a8c3-7227f3d5b128-profile_image-70x70.png"
+                    alt="">
+            </div>
+            <div class="msg-contents">
+                <div class="msg-header">
+                    <h1 class="msg-user-name">Landie</h1>
+                    <h2 class="msg-user-pronouns">they/them</h2>
+                    <div class="msg-user-flair">
+                        <img src="https://placehold.co/20x20/png" alt="">
+                        <img src="https://placehold.co/20x20/png" alt="">
+                        <img src="https://placehold.co/20x20/png" alt="">
+                        <img src="https://placehold.co/20x20/png" alt="">
+                    </div>
+                </div>
+                <p class="msg-user-text">
+                    loading
+                </p>
+            </div>
+        </div>
+    `;
+
+
+            // Modify the content of the message if needed
+            // if same user as before, combine message
+            let msgContainer;
+            if (!isPreviousUser('Landie')) {
+                //new user, new message
+                msgContainer = htmlToNode(msgTemplate);
+
+                //text
+                msgContainer.querySelector('.msg-user-text').textContent = `awa ${Math.round(Math.random() * 100)}`;
+
+                // Append the message container to the chatbox
+                chatbox.appendChild(msgContainer);
+
+                // Scroll the new message into view
+            } else {
+                //same user, append to previous message with some margin
+                msgContainer = document.querySelector('.chatbox').lastElementChild.children[1]
+                const msgContainerExtension = htmlToNode(`<p class="msg-user-text" style="margin-top: 1rem"></p>`)
+
+                //text
+                msgContainerExtension.textContent = 'omg'
+
+                msgContainer.appendChild(msgContainerExtension)
+            }
+
+            msgContainer.scrollIntoView({ behavior: 'smooth', block: 'end' });
+        }
+
+
+        const htmlToNode = (html) => {
+            const tempContainer = document.createElement('div');
+            tempContainer.innerHTML = html.trim();
+            return tempContainer.firstChild;
+        };
+
+        function isPreviousUser(name) {
+            let lastUser;
+            try {
+                lastUser = document.querySelector('.chatbox').lastElementChild.children[1].children[0].children[0].textContent
+            } catch {
+                lastUser = null;
+            }
+
+            console.log(lastUser)
+            if (lastUser !== name) return false;
+            return true;
+        }
+
+        function getTextColor(bgColor) {
+            const whiteContrast = getContrast(bgColor, "#ffffff")
+            const blackContrast = getContrast(bgColor, "#000000")
+
+            return whiteContrast > blackContrast ? "#ffffff" : "#000000"
+
+            function getRGB(c) {
+                return parseInt(c, 16) || c
+            }
+
+            function getsRGB(c) {
+                return getRGB(c) / 255 <= 0.03928
+                    ? getRGB(c) / 255 / 12.92
+                    : Math.pow((getRGB(c) / 255 + 0.055) / 1.055, 2.4)
+            }
+
+            function getLuminance(hexColor) {
+                return (
+                    0.2126 * getsRGB(hexColor.substr(1, 2)) +
+                    0.7152 * getsRGB(hexColor.substr(3, 2)) +
+                    0.0722 * getsRGB(hexColor.substr(-2))
+                )
+            }
+
+            function getContrast(f, b) {
+                const L1 = getLuminance(f)
+                const L2 = getLuminance(b)
+                return (Math.max(L1, L2) + 0.05) / (Math.min(L1, L2) + 0.05)
+            }
+        }
+    </script>
+</body>
+
+</html>

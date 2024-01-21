@@ -1,301 +1,185 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
-  </head>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
-    /* Box sizing rules */
-    *,
-    *::before,
-    *::after {
-      box-sizing: border-box;
-    }
-
-    /* Remove default margin */
-    body,
-    h1,
-    h2,
-    h3,
-    h4,
-    p,
-    figure,
-    blockquote,
-    dl,
-    dd {
+    body {
+      font-family: Arial, sans-serif;
       margin: 0;
-    }
-
-    /* Remove list styles on ul, ol elements with a list role, which suggests default styling will be removed */
-    ul[role="list"],
-    ol[role="list"] {
-      list-style: none;
-    }
-
-    /* Set core root defaults */
-    html:focus-within {
-      scroll-behavior: smooth;
-    }
-
-    /* Set core body defaults */
-    body {
-      min-height: 100vh;
-      text-rendering: optimizeSpeed;
-      line-height: 1.5;
-    }
-
-    /* A elements that don't have a class get default styles */
-    a:not([class]) {
-      text-decoration-skip-ink: auto;
-    }
-
-    /* Make images easier to work with */
-    img,
-    picture {
-      max-width: 100%;
-      display: block;
-    }
-
-    /* Inherit fonts for inputs and buttons */
-    input,
-    button,
-    textarea,
-    select {
-      font: inherit;
-    }
-
-    /* Remove all animations, transitions and smooth scroll for people that prefer not to see them */
-    @media (prefers-reduced-motion: reduce) {
-      html:focus-within {
-        scroll-behavior: auto;
-      }
-
-      *,
-      *::before,
-      *::after {
-        animation-duration: 0.01ms !important;
-        animation-iteration-count: 1 !important;
-        transition-duration: 0.01ms !important;
-        scroll-behavior: auto !important;
-      }
-    }
-  </style>
-  <style>
-    @import url("https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,400;0,600;0,700;0,1000;1,800&display=swap");
-
-    * {
-      font-family: "Nunito", sans-serif;
-    }
-
-    body {
-      display: flex;
-      flex-direction: column-reverse;
-    }
-
-    .message-container-list {
+      padding: 0;
       display: flex;
       flex-direction: column;
+      height: 100vh;
+      background-color: #f4f4f4;
+    }
+
+    #chatbox {
+      flex: 1;
       overflow-y: auto;
+      padding: 10px;
     }
 
     .message-container {
       display: flex;
-      background-color: rgba(0, 0, 255, 0);
-      gap: 1rem;
-      padding-left: 1rem;
-      padding-right: 1rem;
-      padding-bottom: 1rem;
-
-      animation: show 600ms 100ms cubic-bezier(0.38, 0.97, 0.56, 0.76) forwards;
-      opacity: 0;
-      transform: rotateX(-90deg);
-      transform-origin: top center;
-    }
-
-    .message-icon {
-      display: block;
-      max-width: 100px;
-      max-height: 100%;
-      height: auto;
-      width: auto;
-      object-fit: contain;
-    }
-
-    .message-container-inner {
-      background-color: rgba(190, 6, 6, 0);
-      width: 100%;
-      display: flex;
       flex-direction: column;
+      align-items: flex-start;
+      margin: 5px 0;
     }
 
-    .message-body {
-      background-color: rgba(77, 151, 77, 0.604);
-      padding: 1rem;
-      border-radius: 1rem;
-      font-size: 1.6rem;
-      font-weight: 700;
-    }
-
-    .message-badgelist {
+    .message {
       display: flex;
-      flex-direction: row;
+      align-items: flex-start;
+      background-color: #ffffff;
+      border-radius: 8px;
+      margin: 5px 0;
+      padding: 10px;
+      max-width: 70%;
+      word-wrap: break-word;
+      opacity: 0;
+      animation: fadeIn 0.5s ease-in-out forwards;
     }
 
-    .message-badgelist img {
-      object-fit: contain;
-      width: 2.1rem;
+    .profile-pic {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      margin-right: 10px;
     }
 
-    .message-header {
-      display: flex;
-      gap: 0.5rem;
-      text-align: center;
-      align-items: center;
-    }
-
-    .message-header h1 {
-      font-size: 2rem;
-      color: white;
-    }
-
-    .message-header p {
-      font-weight: 700;
-    }
-
-    .message-pronouns {
-      padding: 0.2rem;
-      border-width: 0.2rem;
-      border-color: rgba(255, 255, 255, 0.518);
-      border-style: solid;
-      border-radius: 0.5rem;
-      background-color: rgba(22, 164, 10, 0.568);
-    }
-
-    @keyframes show {
-      100% {
+    @keyframes fadeIn {
+      to {
         opacity: 1;
-        transform: none;
       }
+    }
+
+    #inputContainer {
+      display: flex;
+      padding: 10px;
+      background-color: #ffffff;
+    }
+
+    #usernameInput {
+      flex: 1;
+      margin-right: 10px;
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+
+    #messageInput {
+      flex: 2;
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+
+    #sendMessageBtn {
+      padding: 8px 16px;
+      background-color: #4caf50;
+      color: #ffffff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background-color 0.3s ease-in-out;
+    }
+
+    #sendMessageBtn:hover {
+      background-color: #45a049;
+    }
+
+    /* Spacer to leave a gap at the bottom */
+    .spacer {
+      height: 50px; /* Adjust as needed */
     }
   </style>
+</head>
+<body>
+  <div id="chatbox"></div>
+  <div id="inputContainer">
+    <input type="text" id="usernameInput" placeholder="Username">
+    <input type="text" id="messageInput" placeholder="Type your message...">
+    <button id="sendMessageBtn" onclick="sendMessage()">Send</button>
+  </div>
 
-  <body>
-    <div class="message-container-list"></div>
-    <script>
-      const delay = (ms) => new Promise((res) => setTimeout(res, ms))
-      window.addEventListener("load", () => {
-        startBridgecast() //begin loop
-      })
+  <script>
+    let currentUser = null;
 
-      function startBridgecast() {
-        const wsUrl = "ws://127.0.0.1:6969/sammi-bridge-boi"
-        window.bridgecastWs = new WebSocket(wsUrl) //use window to work around firefox ocnnection issue
+    function sendMessage() {
+      const usernameInput = document.getElementById("usernameInput");
+      const messageInput = document.getElementById("messageInput");
+      const chatbox = document.getElementById("chatbox");
 
-        window.bridgecastWs.onopen = () => {
-          console.log("[Bridgecast] Connected to server!")
-        }
-
-        window.bridgecastWs.onclose = async () => {
-          const interval = 3000
-          console.log("[Bridgecast] Disconnected...")
-          console.log(`[Bridgecast] Retrying conection in ${interval / 1000}`)
-          await delay(interval)
-          startBridgecast()
-        }
-
-        window.bridgecastWs.onerror = (error) => {
-          console.log("[Bridgecast] ERROR:")
-          console.error(error)
-        }
-
-        window.bridgecastWs.onmessage = (event) => {
-          console.log(event)
-          const data = JSON.parse(event.data)
-          console.log(data)
-
-          const textColor = getTextColor(`#${data.chatData.name_color}`)
-
-          const messageList = document.querySelector(".message-container-list")
-
-          messageList.insertAdjacentHTML(
-            "beforeend",
-            `
-          <div class="message-container">
-        <img
-          width="70"
-          height="70"
-          src="${data.userInfo.profile_image_url}"
-          class="message-icon"
-        />
-
-        <div class="message-container-inner">
-          <div class="message-header">
-            <h1 style="font-weight: 800">${data.chatData.display_name}</h1>
-            <p style="display: none;" class="message-pronouns">they/them</p>
-            <div class="message-badgelist" style="display: none;">
-              <img
-                src="https://static-cdn.jtvnw.net/badges/v1/3267646d-33f0-4b17-b3df-f923a41db1d0/3"
-                alt=""
-              />
-            </div>
-          </div>
-          <div class="message-body" style="background-color: #${data.chatData.name_color} !important;">
-            <p style="color: ${textColor}" >${data.chatData.message}</p>
-          </div>
-        </div>
-      </div>
-          `
-          )
-          scrollToLastMessage()
-        }
-        function interval(ms) {
-          new Promise((res) => setTimeout(res, ms))
-        }
+      if (usernameInput.value.trim() === "") {
+        alert("Please enter a username.");
+        return;
       }
 
-      function sendMessage() {
-        const wsbox = document.querySelector("#wsbox")
-        window.bridgecastWs.send(JSON.stringify(wsbox))
+      if (currentUser !== usernameInput.value) {
+        // Change profile picture only if it's a different user
+        currentUser = usernameInput.value;
       }
-      function getTextColor(bgColor) {
-        const whiteContrast = getContrast(bgColor, "#ffffff")
-        const blackContrast = getContrast(bgColor, "#000000")
 
-        return whiteContrast > blackContrast ? "#ffffff" : "#000000"
+      const lastMessageContainer = chatbox.lastChild;
 
-        function getRGB(c) {
-          return parseInt(c, 16) || c
-        }
-
-        function getsRGB(c) {
-          return getRGB(c) / 255 <= 0.03928
-            ? getRGB(c) / 255 / 12.92
-            : Math.pow((getRGB(c) / 255 + 0.055) / 1.055, 2.4)
-        }
-
-        function getLuminance(hexColor) {
-          return (
-            0.2126 * getsRGB(hexColor.substr(1, 2)) +
-            0.7152 * getsRGB(hexColor.substr(3, 2)) +
-            0.0722 * getsRGB(hexColor.substr(-2))
-          )
-        }
-
-        function getContrast(f, b) {
-          const L1 = getLuminance(f)
-          const L2 = getLuminance(b)
-          return (Math.max(L1, L2) + 0.05) / (Math.min(L1, L2) + 0.05)
-        }
+      if (!lastMessageContainer || lastMessageContainer.dataset.user !== currentUser) {
+        // Create a new message container for a new user or the first message
+        const messageContainer = createMessageContainer(currentUser);
+        chatbox.appendChild(messageContainer);
       }
-      function scrollToLastMessage() {
-        const messageList = document.querySelector(".message-container-list")
-        const lastMessage = messageList.lastElementChild
-        if (lastMessage) {
-          lastMessage.scrollIntoView({ behavior: "smooth" })
-        }
-      }
-      //refresh
-    </script>
-  </body>
+
+      const messageContainer = chatbox.lastChild;
+      const message = createMessage(messageInput.value);
+      messageContainer.appendChild(message);
+
+      // Smooth scroll to the bottom
+      message.scrollIntoView({ behavior: "smooth", block: "end" });
+
+      messageInput.value = "";
+    }
+
+    function createMessageContainer(user) {
+      const container = document.createElement("div");
+      container.className = "message-container";
+      container.dataset.user = user;
+      return container;
+    }
+
+    function createMessage(content) {
+      const message = document.createElement("div");
+      message.className = "message";
+
+      const profilePic = document.createElement("img");
+      profilePic.src = getProfilePic(currentUser);
+      profilePic.className = "profile-pic";
+
+      const messageContent = document.createElement("div");
+      messageContent.textContent = content;
+
+      message.appendChild(profilePic);
+      message.appendChild(messageContent);
+
+      return message;
+    }
+
+    function getProfilePic(username) {
+      // Placeholder profile pictures - replace with actual image URLs
+      const profilePics = {
+        user1: "https://via.placeholder.com/30",
+        user2: "https://via.placeholder.com/30",
+        // Add more users as needed
+      };
+
+      return profilePics[username] || "https://via.placeholder.com/30";
+    }
+
+    // Animate existing messages on load
+    window.onload = function () {
+      const messages = document.querySelectorAll(".message");
+      messages.forEach(message => {
+        message.style.animation = "fadeIn 0.5s ease-in-out forwards";
+      });
+    };
+  </script>
+</body>
 </html>

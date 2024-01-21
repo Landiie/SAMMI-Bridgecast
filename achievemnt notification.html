@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Document</title>
+</head>
+<style>
+  /* Box sizing rules */
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
+  /* Remove default margin */
+  body,
+  h1,
+  h2,
+  h3,
+  h4,
+  p,
+  figure,
+  blockquote,
+  dl,
+  dd {
+    margin: 0;
+  }
+
+  /* Remove list styles on ul, ol elements with a list role, which suggests default styling will be removed */
+  ul[role="list"],
+  ol[role="list"] {
+    list-style: none;
+  }
+
+  /* Set core root defaults */
+  html:focus-within {
+    scroll-behavior: smooth;
+  }
+
+  /* Set core body defaults */
+  body {
+    min-height: 100vh;
+    text-rendering: optimizeSpeed;
+    line-height: 1.5;
+  }
+
+  /* A elements that don't have a class get default styles */
+  a:not([class]) {
+    text-decoration-skip-ink: auto;
+  }
+
+  /* Make images easier to work with */
+  img,
+  picture {
+    max-width: 100%;
+    display: block;
+  }
+
+  /* Inherit fonts for inputs and buttons */
+  input,
+  button,
+  textarea,
+  select {
+    font: inherit;
+  }
+
+  /* Remove all animations, transitions and smooth scroll for people that prefer not to see them */
+  @media (prefers-reduced-motion: reduce) {
+    html:focus-within {
+      scroll-behavior: auto;
+    }
+
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+</style>
+<style>
+  @import url("https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,400;0,600;0,700;0,1000;1,800&display=swap");
+
+  * {
+    font-family: "Nunito", sans-serif;
+  }
+
+  body {
+    display: flex;
+    flex-direction: column-reverse;
+  }
+
+  .message-container-list {
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+  }
+
+  .message-container {
+    display: flex;
+    background-color: rgba(0, 0, 255, 0);
+    gap: 1rem;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    padding-bottom: 1rem;
+
+    animation: show 600ms 100ms cubic-bezier(0.38, 0.97, 0.56, 0.76) forwards;
+    opacity: 0;
+    transform: rotateX(-90deg);
+    transform-origin: top center;
+  }
+
+  .message-icon {
+    display: block;
+    max-width: 100px;
+    max-height: 100%;
+    height: auto;
+    width: auto;
+    object-fit: contain;
+  }
+
+  .message-container-inner {
+    background-color: rgba(190, 6, 6, 0);
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .message-body {
+    background-color: rgba(77, 151, 77, 0.604);
+    padding: 1rem;
+    border-radius: 1rem;
+    font-size: 1.6rem;
+    font-weight: 700;
+  }
+
+  .message-badgelist {
+    display: flex;
+    flex-direction: row;
+  }
+
+  .message-badgelist img {
+    object-fit: contain;
+    width: 2.1rem;
+  }
+
+  .message-header {
+    display: flex;
+    gap: 0.5rem;
+    text-align: center;
+    align-items: center;
+  }
+
+  .message-header h1 {
+    font-size: 2rem;
+    color: white;
+  }
+
+  .message-header p {
+    font-weight: 700;
+  }
+
+  .message-pronouns {
+    padding: 0.2rem;
+    border-width: 0.2rem;
+    border-color: rgba(255, 255, 255, 0.518);
+    border-style: solid;
+    border-radius: 0.5rem;
+    background-color: rgba(22, 164, 10, 0.568);
+  }
+
+  @keyframes show {
+    100% {
+      opacity: 1;
+      transform: none;
+    }
+  }
+</style>
+
+<body>
+  <div class="message-container-list"></div>
+  <script>
+    const delay = (ms) => new Promise((res) => setTimeout(res, ms))
+    window.addEventListener("load", () => {
+      startBridgecast() //begin loop
+    })
+
+    function startBridgecast() {
+      const wsUrl = "ws://127.0.0.1:8082"
+      window.bridgecastWs = new WebSocket(wsUrl) //use window to work around firefox ocnnection issue
+
+      window.bridgecastWs.onopen = () => {
+        console.log("[Bridgecast] Connected to server!")
+      }
+
+      window.bridgecastWs.onclose = async () => {
+        const interval = 3000
+        console.log("[Bridgecast] Disconnected...")
+        console.log(`[Bridgecast] Retrying conection in ${interval / 1000}`)
+        await delay(interval)
+        startBridgecast()
+      }
+
+      window.bridgecastWs.onerror = (error) => {
+        console.log("[Bridgecast] ERROR:")
+        console.error(error)
+      }
+
+      window.bridgecastWs.onmessage = (event) => {
+        console.log(event)
+      }
+      function interval(ms) {
+        new Promise((res) => setTimeout(res, ms))
+      }
+    }
+
+    function sendMessage() {
+      const wsbox = document.querySelector("#wsbox")
+      window.bridgecastWs.send(JSON.stringify(wsbox))
+    }
+    function getTextColor(bgColor) {
+      const whiteContrast = getContrast(bgColor, "#ffffff")
+      const blackContrast = getContrast(bgColor, "#000000")
+
+      return whiteContrast > blackContrast ? "#ffffff" : "#000000"
+
+      function getRGB(c) {
+        return parseInt(c, 16) || c
+      }
+
+      function getsRGB(c) {
+        return getRGB(c) / 255 <= 0.03928
+          ? getRGB(c) / 255 / 12.92
+          : Math.pow((getRGB(c) / 255 + 0.055) / 1.055, 2.4)
+      }
+
+      function getLuminance(hexColor) {
+        return (
+          0.2126 * getsRGB(hexColor.substr(1, 2)) +
+          0.7152 * getsRGB(hexColor.substr(3, 2)) +
+          0.0722 * getsRGB(hexColor.substr(-2))
+        )
+      }
+
+      function getContrast(f, b) {
+        const L1 = getLuminance(f)
+        const L2 = getLuminance(b)
+        return (Math.max(L1, L2) + 0.05) / (Math.min(L1, L2) + 0.05)
+      }
+    }
+    function scrollToLastMessage() {
+      const messageList = document.querySelector(".message-container-list")
+      const lastMessage = messageList.lastElementChild
+      if (lastMessage) {
+        lastMessage.scrollIntoView({ behavior: "smooth" })
+      }
+    }
+    //refresh
+  </script>
+</body>
+
+</html>
