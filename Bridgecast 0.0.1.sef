@@ -619,7 +619,7 @@ Transforms the SAMMI Bridge into a websocket to listen to!
 
 [insert_command]
 SAMMI.extCommand('Bridgecast: Websocket Send', 4467268, 80, {
-    client_id: ['Client ID', 14, '', null, null]
+    client_id: ['Client ID', 14, '', null, null],
     json: ['Data (JSON)', 0, '', null, null]
   });
 [insert_hook]

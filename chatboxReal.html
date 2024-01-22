@@ -125,6 +125,7 @@
 
         body {
             line-height: 1;
+            overflow: hidden;
         }
 
         ol,
@@ -239,6 +240,7 @@
             </div>
         </div> -->
     </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/he/1.2.0/he.min.js" integrity="sha512-PEsccDx9jqX6Dh4wZDCnWMaIO3gAaU0j46W//sSqQhUQxky6/eHZyeB3NrXD2xsyugAKd4KPiDANkcuoEa2JuA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script>
         const delay = (ms) => new Promise((res) => setTimeout(res, ms))
         window.addEventListener("load", () => {
@@ -268,7 +270,7 @@
             window.bridgecastWs.onmessage = (event) => {
                 const data = JSON.parse(event.data)
                 console.log(data)
-                newMessage(data.display_name, data.message, data.extended.profile_image_url)
+                newMessage(data)
             }
             function interval(ms) {
                 new Promise((res) => setTimeout(res, ms))
@@ -280,7 +282,7 @@
             // document.querySelector('.msg-user-text').textContent = lorem;
         });
 
-        function newMessage(name, message, pfp) {
+        function newMessage(chatData) {
             const chatbox = document.querySelector('.chatbox');
 
             // Your template string for the message
@@ -301,9 +303,9 @@
                         <img src="https://placehold.co/20x20/png" alt="">
                     </div>
                 </div>
-                <p class="msg-user-text">
+                <span class="msg-user-text">
                     loading
-                </p>
+                </span>
             </div>
         </div>
     `;
@@ -312,34 +314,46 @@
             // Modify the content of the message if needed
             // if same user as before, combine message
             let msgContainer;
-            if (!isPreviousUser(name)) {
+            let userMsg = he.encode(chatData.message);
+            chatData.emotes.forEach(emote => {
+                console.log(emote.name)
+                userMsg = userMsg.replace(emote.name, `<img src="${emote.url}" height="50" alt="">`)
+            });
+            if (!isPreviousUser(chatData.true_name)) {
                 //new user, new message
                 msgContainer = htmlToNode(msgTemplate);
 
+                //background
+                
+                
                 //text
-                msgContainer.querySelector('.msg-user-text').textContent = message;
+                msgContainer.querySelector('.msg-user-text').style.backgroundColor = `#${chatData.true_color}`;
+                msgContainer.querySelector('.msg-user-text').style.color = getTextColor(`#${chatData.true_color}`);
+                msgContainer.querySelector('.msg-user-text').innerHTML = userMsg;
                 
                 //pfp
-                msgContainer.querySelector('.msg-pfp-source').src = pfp;
+                msgContainer.querySelector('.msg-pfp-source').src = chatData.true_pfp;
                 
                 //name
-                msgContainer.querySelector('.msg-user-name').textContent = name;
-
+                msgContainer.querySelector('.msg-user-name').textContent = chatData.true_name;
+                
                 // Append the message container to the chatbox
                 chatbox.appendChild(msgContainer);
-
+                
                 // Scroll the new message into view
             } else {
                 //same user, append to previous message with some margin
                 msgContainer = document.querySelector('.chatbox').lastElementChild.children[1]
-                const msgContainerExtension = htmlToNode(`<p class="msg-user-text" style="margin-top: 1rem"></p>`)
+                const msgContainerExtension = htmlToNode(`<span class="msg-user-text" style="margin-top: 1rem"></span>`)
                 //* wa
                 //text
-                msgContainerExtension.textContent = message
-
+                msgContainerExtension.style.backgroundColor = `#${chatData.true_color}`;
+                msgContainerExtension.style.color = getTextColor(`#${chatData.true_color}`);
+                msgContainerExtension.innerHTML = userMsg
+                
                 msgContainer.appendChild(msgContainerExtension)
             }
-
+            
             msgContainer.scrollIntoView({ behavior: 'smooth', block: 'end' });
         }
 
@@ -392,6 +406,17 @@
                 const L2 = getLuminance(b)
                 return (Math.max(L1, L2) + 0.05) / (Math.min(L1, L2) + 0.05)
             }
+        }
+        function escapeHTML(str) {
+            return str.replace(/[&<>"']/g, function (match) {
+                return {
+                    '&': '&amp;',
+                    '<': '&lt;',
+                    '>': '&gt;',
+                    '"': '&quot;',
+                    "'": '&#39;'
+                }[match];
+            });
         }
     </script>
 </body>

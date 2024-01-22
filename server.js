@@ -14,12 +14,13 @@ wss.on("connection", function connection(ws, req) {
   console.log(req.url)
   ws.sammi_identifier = req.url;
   ws.on("message", function incoming(data) {
-    console.log(req.url)
-    if (req.url !== '/sammi-bridge-boi') return;
+    const dataParsed = JSON.parse(data)
+    if (req.url !== '/sammi-bridge-boi') return; //cancel if not sent from bridge
+    console.log('checking clients...')
     // console.log(JSON.parse(data.toString("utf8")))
     wss.clients.forEach(function each(client) {
-      if (client !== ws && client.readyState === WebSocket.OPEN) {
-        client.send(data.toString("utf8"))
+      if (client !== ws && client.readyState === WebSocket.OPEN && client.sammi_identifier === `/${dataParsed.client_id}`) {
+        client.send(JSON.stringify(dataParsed.data))
         console.log(`sending to sammi client: ${client.sammi_identifier}`)
       }
     })
